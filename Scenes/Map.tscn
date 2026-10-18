@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://deaxtxjp71mbk"]
+
+[ext_resource type="Texture2D" uid="uid://bfb437vux34cj" path="res://Assets/Default/background.webp" id="1_7yn8b"]
+[ext_resource type="Texture2D" uid="uid://ydl2u001ipa5" path="res://Assets/Retina/star_small.png" id="1_s486e"]
+
+[sub_resource type="Curve" id="Curve_s486e"]
+_data = [Vector2(0, 0.23214293), 0.0, 0.76785713, 0, 1, Vector2(1, 1), 0.76785713, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_s486e"]
+curve = SubResource("Curve_s486e")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e152d"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(300, 0, 0)
+emission_shape = 3
+emission_box_extents = Vector3(300, 1, 1)
+direction = Vector3(0, 1, 0)
+spread = 0.0
+initial_velocity_min = 15.0
+initial_velocity_max = 50.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.75
+scale_max = 0.75
+scale_over_velocity_min = 5.0
+scale_over_velocity_max = 50.0
+scale_over_velocity_curve = SubResource("CurveTexture_s486e")
+
+[node name="Map" type="Node2D" unique_id=2112493916]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1920844687]
+position = Vector2(300, 400)
+scale = Vector2(2.771825, 2.5371428)
+texture = ExtResource("1_7yn8b")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1245473851]
+position = Vector2(1, 0)
+amount = 100
+sub_emitter = NodePath(".")
+texture = ExtResource("1_s486e")
+lifetime = 60.0
+preprocess = 60.0
+visibility_rect = Rect2(0, 0, 600, 800)
+process_material = SubResource("ParticleProcessMaterial_e152d")
