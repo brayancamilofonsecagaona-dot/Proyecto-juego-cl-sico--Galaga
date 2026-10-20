@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://deaxtxjp71mbk"]
 
 [ext_resource type="Texture2D" uid="uid://bfb437vux34cj" path="res://Assets/Default/background.webp" id="1_7yn8b"]
+[ext_resource type="Script" uid="uid://ii1mjr64ahcg" path="res://Scenes/map.gd" id="1_qumfl"]
 [ext_resource type="Texture2D" uid="uid://ydl2u001ipa5" path="res://Assets/Retina/star_small.png" id="1_s486e"]
+[ext_resource type="PackedScene" uid="uid://d2frmgt3bug4d" path="res://Scenes/Enemy.tscn" id="3_etk83"]
 
 [sub_resource type="Curve" id="Curve_s486e"]
 _data = [Vector2(0, 0.23214293), 0.0, 0.76785713, 0, 1, Vector2(1, 1), 0.76785713, 0.0, 1, 0]
@@ -26,7 +28,27 @@ scale_over_velocity_min = 5.0
 scale_over_velocity_max = 50.0
 scale_over_velocity_curve = SubResource("CurveTexture_s486e")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e152d"]
+size = Vector2(570, 52.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bsa5f"]
+size = Vector2(66.5, 1054)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5s40y"]
+size = Vector2(74, 1067.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qumfl"]
+size = Vector2(1008, 142)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fwcp4"]
+size = Vector2(636, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r08cw"]
+size = Vector2(29, 854)
+
 [node name="Map" type="Node2D" unique_id=2112493916]
+script = ExtResource("1_qumfl")
+enemy_to_spawn = ExtResource("3_etk83")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1920844687]
 position = Vector2(300, 400)
@@ -42,3 +64,54 @@ lifetime = 60.0
 preprocess = 60.0
 visibility_rect = Rect2(0, 0, 600, 800)
 process_material = SubResource("ParticleProcessMaterial_e152d")
+
+[node name="Enemy" parent="." unique_id=564619901 instance=ExtResource("3_etk83")]
+position = Vector2(281, 184)
+collision_mask = 2
+
+[node name="SpawnArea" type="Area2D" parent="." unique_id=1429599094]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea" unique_id=1715153924]
+position = Vector2(295, -54.75)
+shape = SubResource("RectangleShape2D_e152d")
+
+[node name="SpawnTimer" type="Timer" parent="." unique_id=259178596]
+autostart = true
+
+[node name="remove_area" type="Area2D" parent="." unique_id=756609097]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="remove_area" unique_id=1008978294]
+position = Vector2(-180.25, 389)
+shape = SubResource("RectangleShape2D_bsa5f")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="remove_area" unique_id=338223071]
+position = Vector2(745, 381.25)
+shape = SubResource("RectangleShape2D_5s40y")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="remove_area" unique_id=697607039]
+position = Vector2(286, 966)
+shape = SubResource("RectangleShape2D_qumfl")
+
+[node name="BorderFence" type="StaticBody2D" parent="." unique_id=839809991]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BorderFence" unique_id=395782204]
+position = Vector2(300, -12)
+shape = SubResource("RectangleShape2D_fwcp4")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="BorderFence" unique_id=212602430]
+position = Vector2(306, 815)
+shape = SubResource("RectangleShape2D_fwcp4")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="BorderFence" unique_id=1528630591]
+position = Vector2(-16.5, 399)
+shape = SubResource("RectangleShape2D_r08cw")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="BorderFence" unique_id=1755353756]
+position = Vector2(613, 401)
+shape = SubResource("RectangleShape2D_r08cw")
+
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
+[connection signal="body_entered" from="remove_area" to="." method="_on_remove_area_body_entered"]

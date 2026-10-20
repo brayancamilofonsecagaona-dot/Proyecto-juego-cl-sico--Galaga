@@ -7,6 +7,8 @@
 
 [node name="Player" type="CharacterBody2D" unique_id=2060605334]
 position = Vector2(1, 1)
+scale = Vector2(0.4, 0.4)
+collision_mask = 6
 script = ExtResource("1_kyqiw")
 
 [node name="ShipA" type="Sprite2D" parent="." unique_id=988129905]
