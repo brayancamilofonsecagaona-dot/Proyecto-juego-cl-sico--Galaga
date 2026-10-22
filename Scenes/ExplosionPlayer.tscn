@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scenes/explosion.gd" id="1_s"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_nave_1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_nave_2.png" id="f2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_nave_3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_nave_4.png" id="f4"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_e"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}],
+"loop": false,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="ExplosionPlayer" type="AnimatedSprite2D"]
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_e")
+script = ExtResource("1_s")

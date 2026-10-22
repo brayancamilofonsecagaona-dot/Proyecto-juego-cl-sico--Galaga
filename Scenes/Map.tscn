@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://deaxtxjp71mbk"]
 
-[ext_resource type="Texture2D" uid="uid://bfb437vux34cj" path="res://Assets/Default/background.webp" id="1_7yn8b"]
 [ext_resource type="Script" uid="uid://ii1mjr64ahcg" path="res://Scenes/map.gd" id="1_qumfl"]
-[ext_resource type="Texture2D" uid="uid://ydl2u001ipa5" path="res://Assets/Retina/star_small.png" id="1_s486e"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/estrella.png" id="1_s486e"]
 [ext_resource type="PackedScene" uid="uid://d2frmgt3bug4d" path="res://Scenes/Enemy.tscn" id="3_etk83"]
 
 [sub_resource type="Curve" id="Curve_s486e"]
@@ -11,6 +10,14 @@ point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_s486e"]
 curve = SubResource("Curve_s486e")
+
+[sub_resource type="Gradient" id="Gradient_estrellas"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.25, 0.5, 0.75)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.25, 0.25, 1, 1, 1, 0.3, 1, 0.3, 0.8, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_estrellas"]
+gradient = SubResource("Gradient_estrellas")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e152d"]
 particle_flag_disable_z = true
@@ -22,8 +29,9 @@ spread = 0.0
 initial_velocity_min = 15.0
 initial_velocity_max = 50.0
 gravity = Vector3(0, 0, 0)
-scale_min = 0.75
-scale_max = 0.75
+scale_min = 1.5
+scale_max = 1.5
+color_initial_ramp = SubResource("GradientTexture1D_estrellas")
 scale_over_velocity_min = 5.0
 scale_over_velocity_max = 50.0
 scale_over_velocity_curve = SubResource("CurveTexture_s486e")
@@ -50,10 +58,11 @@ size = Vector2(29, 854)
 script = ExtResource("1_qumfl")
 enemy_to_spawn = ExtResource("3_etk83")
 
-[node name="Background" type="Sprite2D" parent="." unique_id=1920844687]
-position = Vector2(300, 400)
-scale = Vector2(2.771825, 2.5371428)
-texture = ExtResource("1_7yn8b")
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 600.0
+offset_bottom = 800.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1245473851]
 position = Vector2(1, 0)
@@ -65,10 +74,6 @@ preprocess = 60.0
 visibility_rect = Rect2(0, 0, 600, 800)
 process_material = SubResource("ParticleProcessMaterial_e152d")
 
-[node name="Enemy" parent="." unique_id=564619901 instance=ExtResource("3_etk83")]
-position = Vector2(281, 184)
-collision_mask = 2
-
 [node name="SpawnArea" type="Area2D" parent="." unique_id=1429599094]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea" unique_id=1715153924]
@@ -76,7 +81,6 @@ position = Vector2(295, -54.75)
 shape = SubResource("RectangleShape2D_e152d")
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=259178596]
-autostart = true
 
 [node name="remove_area" type="Area2D" parent="." unique_id=756609097]
 collision_layer = 4

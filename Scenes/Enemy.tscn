@@ -1,19 +1,100 @@
 [gd_scene format=3 uid="uid://d2frmgt3bug4d"]
 
 [ext_resource type="Script" uid="uid://d0xrlqjaqttd5" path="res://enemy.gd" id="1_wovta"]
-[ext_resource type="Texture2D" uid="uid://bbqfmcnivirpj" path="res://Assets/Default/enemy_A.png" id="2_xeo28"]
+[ext_resource type="PackedScene" path="res://Scenes/ExplosionEnemy.tscn" id="2_ex"]
+[ext_resource type="PackedScene" path="res://Scenes/Weapon.tscn" id="3_wp"]
+[ext_resource type="PackedScene" path="res://Scenes/EnemyBullet.tscn" id="4_eb"]
+[ext_resource type="PackedScene" path="res://Scenes/PowerUp.tscn" id="5_pw"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/abeja_1.png" id="a1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/abeja_2.png" id="a2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/mariposa_1.png" id="m1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/mariposa_2.png" id="m2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/jefe_1.png" id="j1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/jefe_2.png" id="j2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/jefe_herido_1.png" id="h1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/jefe_herido_2.png" id="h2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/rayo_1.png" id="r1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/rayo_2.png" id="r2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/rayo_3.png" id="r3"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/nave_capturada.png" id="6_nc"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_en"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("a1")}, {"duration": 1.0, "texture": ExtResource("a2")}],
+"loop": true,
+"name": &"abeja",
+"speed": 3.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("m1")}, {"duration": 1.0, "texture": ExtResource("m2")}],
+"loop": true,
+"name": &"mariposa",
+"speed": 3.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("j1")}, {"duration": 1.0, "texture": ExtResource("j2")}],
+"loop": true,
+"name": &"jefe",
+"speed": 3.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("h1")}, {"duration": 1.0, "texture": ExtResource("h2")}],
+"loop": true,
+"name": &"jefe_herido",
+"speed": 3.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rayo"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("r1")}, {"duration": 1.0, "texture": ExtResource("r2")}, {"duration": 1.0, "texture": ExtResource("r3")}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rayo"]
+size = Vector2(90, 240)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_e152d"]
-radius = 21.023796
+radius = 16.0
 
-[node name="Enemy" type="CharacterBody2D" unique_id=564619901]
+[node name="Enemy" type="CharacterBody2D"]
 collision_layer = 2
 script = ExtResource("1_wovta")
+explosion = ExtResource("2_ex")
+powerup = ExtResource("5_pw")
 
-[node name="EnemyA" type="Sprite2D" parent="." unique_id=1875543674]
-position = Vector2(0, 3)
-texture = ExtResource("2_xeo28")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_en")
+animation = &"abeja"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1519288023]
-position = Vector2(0, 3)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_e152d")
+
+[node name="Weapon" parent="." instance=ExtResource("3_wp")]
+position = Vector2(0, -22)
+reload_time = 1.5
+bullet = ExtResource("4_eb")
+bullet_speed = 400.0
+enemy_weapon = true
+
+[node name="NaveCapturada" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, 36)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("6_nc")
+
+[node name="Rayo" type="Node2D" parent="."]
+visible = false
+position = Vector2(0, -140)
+rotation = 3.1415927
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Rayo"]
+scale = Vector2(2.5, 3)
+sprite_frames = SubResource("SpriteFrames_rayo")
+
+[node name="Area" type="Area2D" parent="Rayo"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rayo/Area"]
+shape = SubResource("RectangleShape2D_rayo")
+

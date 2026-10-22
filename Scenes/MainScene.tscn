@@ -1,12 +1,30 @@
 [gd_scene format=3 uid="uid://nhv4iv72i4ek"]
 
+[ext_resource type="Script" uid="uid://chj7iwskon58a" path="res://Scenes/main_scene.gd" id="0_ms"]
 [ext_resource type="PackedScene" uid="uid://dmvd388ukufnw" path="res://Scenes/Player.tscn" id="1_hpc76"]
 [ext_resource type="PackedScene" uid="uid://deaxtxjp71mbk" path="res://Scenes/Map.tscn" id="2_tr2i4"]
+[ext_resource type="PackedScene" path="res://Scenes/UI.tscn" id="3_ui"]
+[ext_resource type="AudioStream" uid="uid://bpqxs62qtfo7c" path="res://Assets/Audio/galaga_ost.mp3" id="4_mus"]
+[ext_resource type="AudioStream" uid="uid://do5wggi03ibhi" path="res://Assets/Audio/sfx/start.wav" id="5_ini"]
 
-[node name="MainScene" type="Node2D" unique_id=164252508]
+[node name="MainScene" type="Node2D" unique_id=216068403]
+script = ExtResource("0_ms")
 
-[node name="Map" parent="." unique_id=2112493916 instance=ExtResource("2_tr2i4")]
+[node name="Map" parent="." unique_id=1107582982 instance=ExtResource("2_tr2i4")]
 
-[node name="Player" parent="." unique_id=2101846546 instance=ExtResource("1_hpc76")]
-position = Vector2(257, 721)
-scale = Vector2(2, 2)
+[node name="Player" parent="." unique_id=5026971 instance=ExtResource("1_hpc76")]
+position = Vector2(300, 720)
+
+[node name="UI" parent="." unique_id=420155686 instance=ExtResource("3_ui")]
+
+[node name="Musica" type="AudioStreamPlayer" parent="." unique_id=1525446626]
+stream = ExtResource("4_mus")
+volume_db = -8.0
+
+[node name="Inicio" type="AudioStreamPlayer" parent="." unique_id=578025173]
+stream = ExtResource("5_ini")
+
+[connection signal="enemy_spawned" from="Map" to="." method="_on_map_enemy_spawned"]
+[connection signal="health_changed" from="Player" to="." method="_on_player_health_changed"]
+[connection signal="player_died" from="Player" to="." method="_on_player_player_died"]
+[connection signal="finished" from="Musica" to="Musica" method="play"]

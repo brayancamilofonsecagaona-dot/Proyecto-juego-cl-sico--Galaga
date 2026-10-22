@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scenes/explosion.gd" id="1_s"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_enemigo_1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_enemigo_2.png" id="f2"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_enemigo_3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_enemigo_4.png" id="f4"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/explosion_enemigo_5.png" id="f5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_e"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}, {"duration": 1.0, "texture": ExtResource("f5")}],
+"loop": false,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="ExplosionEnemy" type="AnimatedSprite2D"]
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_e")
+script = ExtResource("1_s")
