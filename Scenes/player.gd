@@ -25,13 +25,8 @@ var id_escudo = 0
 
 
 func _ready() -> void:
-<<<<<<< HEAD
 	current_weapon.max_bullets = 5
 	$Weapon2.max_bullets = 5
-=======
-	current_weapon.max_bullets = 2
-	$Weapon2.max_bullets = 2
->>>>>>> 3fcd7c9e80d0a551ee09c07a360d82e961911731
 	health_changed.emit(vidas, VIDAS_MAX)
 
 
