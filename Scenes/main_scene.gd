@@ -21,7 +21,7 @@ func empezar():
 
 
 func _on_player_health_changed(current, maximum):
-	$UI.update_health(current, maximum)
+	$UI.update_lives(current)
 
 
 func _on_player_player_died():

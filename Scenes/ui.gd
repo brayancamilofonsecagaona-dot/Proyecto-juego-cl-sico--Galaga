@@ -3,9 +3,26 @@ extends Control
 var id_mensaje = 0
 
 
-func update_health(current, maximum):
-	$HealthBar.max_value = maximum
-	$HealthBar.value = current
+const TEX_NAVE = preload("res://Assets/Galaga/nave.png")
+var caja = HBoxContainer.new()
+
+
+func _ready():
+	caja.position = Vector2(15, 760)
+	add_child(caja)
+
+
+# muestra las naves de reserva abajo a la izquierda
+func update_lives(vidas):
+	for c in caja.get_children():
+		c.queue_free()
+	for i in max(0, vidas - 1):
+		var r = TextureRect.new()
+		r.texture = TEX_NAVE
+		r.custom_minimum_size = Vector2(32, 32)
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		caja.add_child(r)
 
 
 func update_points(points):

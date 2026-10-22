@@ -16,7 +16,7 @@ signal ship_rescued
 var current_hp: float
 var points = 50
 var tipo = "abeja"
-var patron = "recto"
+var patron = "entrando"
 var nivel = 1
 var dead = false
 var t = 0.0
@@ -26,11 +26,21 @@ var con_nave = false
 var sonido_rayo
 var lado = 1
 
+# formación
+var map
+var slot = -1
+var slot_pos = Vector2.ZERO
+var espera = 8.0
+var es_captor = false
+var ang = PI / 2        # rumbo actual (hacia abajo)
+var giro_lado = 1
+var t_ataque = 0.0
+var y_giro = randf_range(500, 640)   # altura donde la abeja da la vuelta
+
 @onready var sprite = $AnimatedSprite2D
 
 #se crea el enemigo aleatorio
 func _ready():
-	tipo = ["abeja", "abeja", "mariposa", "jefe"].pick_random()
 	if tipo == "mariposa":
 		points = 80
 	elif tipo == "jefe":
@@ -41,40 +51,63 @@ func _ready():
 	health_changed.emit(current_hp, max_hp)
 
 	speed += 20 * (nivel - 1)
-	$Weapon.reload_time = max(0.6, 1.5 - 0.15 * (nivel - 1))
-  #movimiento del enemigo
-	var patrones = ["recto", "recto", "zigzag"]
-	#Nueva posibilidad de movimiento en picada 
-	if nivel >= 2:
-		patrones.append("picada")
-	patron = patrones.pick_random()
-	#si es jefe tiene posibilidad de nuevo patron
-	if tipo == "jefe" and randf() < 0.4:
-		patron = "captor"
+	$Weapon.reload_time = max(1.2, 2.5 - 0.15 * (nivel - 1))
+	if tipo == "jefe":
+		$Weapon.queue_free()   # el jefe no dispara, solo captura
+
+	patron = "entrando"
+	es_captor = tipo == "jefe"
+	espera = max(2.0, randf_range(4.0, 12.0) - nivel)
 
 
 func _physics_process(delta):
 	t += delta
 
-	#direction o patron  de  movimiento
 	var dir = direction
+	var mult = 1.0
 	match patron:
-		#de izquierda a derecha usamos la funcion del coseno
-		"zigzag":
-			dir = Vector2(cos(t * 3) * 1.2, 1)
-			#se lanza contra jugador luego de pixel 150
-		"picada":
-			if estado == "bajando" and global_position.y > 150:
-				estado = "picando"
+		"entrando", "volviendo":
+			var destino = slot_pos + Vector2(map.sway, 0)
+			var d = destino - global_position
+			if d.length() < 8:
+				patron = "formacion"
+			if d.length() < 60:
+				ang = d.angle()               # ya cerca: apunta directo
+			else:
+				girar_hacia(d.angle(), 5.0, delta)
+			dir = Vector2.from_angle(ang)
+			mult = 2.5
+		"ataque":
+			t_ataque += delta
+			if t_ataque < 1.4:
+				# bucle inicial hacia afuera
+				ang += giro_lado * 3.0 * delta
+			else:
+				# curva hacia el jugador, siempre hacia abajo
+				var objetivo = Vector2.DOWN.angle()
 				var player = get_tree().get_first_node_in_group("player")
 				if player:
-					direction = (player.global_position - global_position).normalized()
-					direction.y = max(direction.y, 0.4)
-			dir = direction
+					objetivo = (Vector2(player.global_position.x, global_position.y + 300) - global_position).angle()
+				if tipo == "mariposa":
+					objetivo += sin(t * 4) * 0.8      # serpentea
+					girar_hacia(objetivo, 3.0, delta)
+				else:
+					girar_hacia(objetivo, 2.0, delta)
+					if global_position.y > y_giro:
+						patron = "volviendo"       # giro en U
+			dir = Vector2.from_angle(ang)
+			mult = 1.8
+		"formacion":
+			global_position = slot_pos + Vector2(map.sway, 0)
+			rotation = 0
+			espera -= delta
+			if espera <= 0:
+				salir_de_formacion()
+			return
 		"captor":
 			dir = actualizar_captor(delta)
 
-	velocity = dir.normalized() * speed
+	velocity = dir.normalized() * speed * mult
 	if estado == "saliendo":
 		velocity *= 1.8
 
@@ -89,6 +122,38 @@ func _physics_process(delta):
 		if body.has_method("take_damage"):
 			body.take_damage(collision_damage)
 			die()
+
+
+func salir_de_formacion():
+	estado = "bajando"
+	if es_captor:
+		patron = "captor"
+		return
+	patron = "ataque"
+	t_ataque = 0.0
+	ang = -PI / 2                                      # empieza subiendo
+	giro_lado = -1 if global_position.x < 300 else 1   # el bucle sale hacia afuera
+
+
+# al salir por abajo reaparece arriba y vuelve a su casilla
+func volver_arriba():
+	global_position = Vector2(slot_pos.x, -40)
+	patron = "volviendo"
+	estado = "bajando"
+	ang = PI / 2
+	tiempo_rayo = 0.0
+	espera = max(2.0, randf_range(4.0, 12.0) - nivel)
+
+
+# gira el rumbo hacia un ángulo con una velocidad máxima de giro
+func girar_hacia(objetivo, max_giro, delta):
+	var diff = angle_difference(ang, objetivo)
+	ang += clamp(diff, -max_giro * delta, max_giro * delta)
+
+
+func _exit_tree():
+	if slot != -1 and is_instance_valid(map):
+		map.liberar(slot)
 
 #jefe captor
 func actualizar_captor(delta):
@@ -157,6 +222,8 @@ func die():
 	if dead:
 		return
 	dead = true
+	hide()
+	queue_free()   # se borra aunque algo más abajo falle
 	match tipo:
 		"abeja":
 			Global.play_sfx("zako_destroy")
@@ -179,4 +246,8 @@ func die():
 		get_tree().current_scene.call_deferred("add_child", p)
 
 	enemy_died.emit(points)
-	queue_free()
+
+
+# solo dispara mientras ataca en picada (no en formación ni en el bucle)
+func puede_disparar():
+	return patron == "ataque" and t_ataque > 1.4
