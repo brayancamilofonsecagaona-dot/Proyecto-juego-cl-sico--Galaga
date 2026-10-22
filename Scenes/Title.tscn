@@ -1,0 +1,185 @@
+[gd_scene format=3 uid="uid://c2f0i6x8lkm3u"]
+
+[ext_resource type="Script" uid="uid://bph56hff83shy" path="res://Scenes/title.gd" id="1_s"]
+[ext_resource type="Texture2D" uid="uid://djln0716o6a22" path="res://Assets/Galaga/estrella.png" id="1_s486e"]
+[ext_resource type="AudioStream" uid="uid://bpqxs62qtfo7c" path="res://Assets/Audio/galaga_ost.mp3" id="a_mus"]
+[ext_resource type="Texture2D" uid="uid://bnhk66uk0wryb" path="res://Assets/Galaga/abeja_1.png" id="t_abeja"]
+[ext_resource type="Texture2D" uid="uid://0xy2wy500ws3" path="res://Assets/Galaga/jefe_1.png" id="t_jefe"]
+[ext_resource type="Texture2D" uid="uid://lhfqmxd7tl5d" path="res://Assets/Galaga_logo.svg-removebg-preview.png" id="t_logo"]
+[ext_resource type="Texture2D" uid="uid://toxogd3nlocs" path="res://Assets/Galaga/mariposa_1.png" id="t_mariposa"]
+[ext_resource type="Texture2D" uid="uid://ifashilc0fvd" path="res://Assets/Galaga/nave.png" id="t_nave"]
+
+[sub_resource type="Gradient" id="Gradient_estrellas"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.25, 0.5, 0.75)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.25, 0.25, 1, 1, 1, 0.3, 1, 0.3, 0.8, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_estrellas"]
+gradient = SubResource("Gradient_estrellas")
+
+[sub_resource type="Curve" id="Curve_s486e"]
+_data = [Vector2(0, 0.23214293), 0.0, 0.76785713, 0, 1, Vector2(1, 1), 0.76785713, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_s486e"]
+curve = SubResource("Curve_s486e")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e152d"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(300, 0, 0)
+emission_shape = 3
+emission_box_extents = Vector3(300, 1, 1)
+direction = Vector3(0, 1, 0)
+spread = 0.0
+initial_velocity_min = 15.0
+initial_velocity_max = 50.0
+gravity = Vector3(0, 0, 0)
+scale_min = 1.5
+scale_max = 1.5
+scale_over_velocity_min = 5.0
+scale_over_velocity_max = 50.0
+scale_over_velocity_curve = SubResource("CurveTexture_s486e")
+color_initial_ramp = SubResource("GradientTexture1D_estrellas")
+
+[node name="Title" type="Control" unique_id=587301742]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 800.0
+script = ExtResource("1_s")
+
+[node name="Fondo" type="ColorRect" parent="." unique_id=625621121]
+layout_mode = 0
+offset_right = 600.0
+offset_bottom = 800.0
+color = Color(0, 0, 0, 1)
+
+[node name="Estrellas" type="GPUParticles2D" parent="." unique_id=1596107289]
+amount = 100
+texture = ExtResource("1_s486e")
+lifetime = 60.0
+preprocess = 60.0
+visibility_rect = Rect2(0, 0, 600, 800)
+process_material = SubResource("ParticleProcessMaterial_e152d")
+
+[node name="Logo" type="Sprite2D" parent="." unique_id=1740609222]
+texture_filter = 2
+position = Vector2(300, 135)
+scale = Vector2(0.62, 0.62)
+texture = ExtResource("t_logo")
+
+[node name="Sub" type="Label" parent="." unique_id=1675347499]
+layout_mode = 0
+offset_top = 255.0
+offset_right = 600.0
+offset_bottom = 280.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "PROYECTO CLÁSICO"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Nave" type="Sprite2D" parent="." unique_id=27441824]
+position = Vector2(300, 315)
+scale = Vector2(3, 3)
+texture = ExtResource("t_nave")
+
+[node name="Tabla" type="Label" parent="." unique_id=550506335]
+layout_mode = 0
+offset_top = 350.0
+offset_right = 600.0
+offset_bottom = 380.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "— TABLA DE PUNTOS —"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Abeja" type="Sprite2D" parent="." unique_id=1436104765]
+position = Vector2(230, 410)
+scale = Vector2(3, 3)
+texture = ExtResource("t_abeja")
+
+[node name="PtsAbeja" type="Label" parent="." unique_id=455904240]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 395.0
+offset_right = 480.0
+offset_bottom = 425.0
+theme_override_colors/font_color = Color(1, 1, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "50 PTS"
+vertical_alignment = 1
+
+[node name="Mariposa" type="Sprite2D" parent="." unique_id=1572719374]
+position = Vector2(230, 465)
+scale = Vector2(3, 3)
+texture = ExtResource("t_mariposa")
+
+[node name="PtsMariposa" type="Label" parent="." unique_id=1975402887]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 450.0
+offset_right = 480.0
+offset_bottom = 480.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "80 PTS"
+vertical_alignment = 1
+
+[node name="Jefe" type="Sprite2D" parent="." unique_id=61119768]
+position = Vector2(230, 520)
+scale = Vector2(3, 3)
+texture = ExtResource("t_jefe")
+
+[node name="PtsJefe" type="Label" parent="." unique_id=408937973]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 505.0
+offset_right = 480.0
+offset_bottom = 535.0
+theme_override_colors/font_color = Color(0.3, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 22
+text = "150 PTS"
+vertical_alignment = 1
+
+[node name="Record" type="Label" parent="." unique_id=723516514]
+layout_mode = 0
+offset_top = 580.0
+offset_right = 600.0
+offset_bottom = 620.0
+theme_override_colors/font_color = Color(1, 0.2, 0.15, 1)
+theme_override_font_sizes/font_size = 24
+text = "HI-SCORE   000000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Start" type="Label" parent="." unique_id=535033614]
+layout_mode = 0
+offset_top = 650.0
+offset_right = 600.0
+offset_bottom = 700.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "PRESIONA ENTER"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Controles" type="Label" parent="." unique_id=1726754480]
+layout_mode = 0
+offset_top = 730.0
+offset_right = 600.0
+offset_bottom = 780.0
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "WASD / FLECHAS  mover
+ESPACIO / X / CLIC  disparar"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Musica" type="AudioStreamPlayer" parent="." unique_id=735693928]
+stream = ExtResource("a_mus")
+volume_db = -8.0
+autoplay = true
+
+[connection signal="finished" from="Musica" to="Musica" method="play"]

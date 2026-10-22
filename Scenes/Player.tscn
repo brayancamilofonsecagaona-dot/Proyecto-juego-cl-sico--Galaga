@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dmvd388ukufnw"]
+
+[ext_resource type="Script" uid="uid://dgscmojnf4qwl" path="res://Scenes/player.gd" id="1_kyqiw"]
+[ext_resource type="Texture2D" path="res://Assets/Galaga/nave.png" id="2_nave"]
+[ext_resource type="PackedScene" path="res://Scenes/Weapon.tscn" id="3_wp"]
+[ext_resource type="PackedScene" path="res://Scenes/ExplosionPlayer.tscn" id="4_ex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_e152d"]
+radius = 14.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_mask = 6
+script = ExtResource("1_kyqiw")
+explosion = ExtResource("4_ex")
+
+[node name="Nave" type="Sprite2D" parent="."]
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("2_nave")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_e152d")
+
+[node name="Weapon" parent="." instance=ExtResource("3_wp")]
+position = Vector2(0, -22)
+
+[node name="Nave2" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(34, 0)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("2_nave")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(34, 0)
+shape = SubResource("CircleShape2D_e152d")
+disabled = true
+
+[node name="Weapon2" parent="." instance=ExtResource("3_wp")]
+position = Vector2(34, -22)
