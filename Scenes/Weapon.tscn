@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cnykdjoivq8e6"]
 
-[ext_resource type="Script" path="res://Scenes/weapon.gd" id="1_w"]
-[ext_resource type="PackedScene" path="res://Scenes/Bullet.tscn" id="2_b"]
+[ext_resource type="Script" uid="uid://beoyl5d58301y" path="res://Scenes/weapon.gd" id="1_w"]
+[ext_resource type="PackedScene" uid="uid://bixpln1cik60r" path="res://Scenes/Bullet.tscn" id="2_b"]
 
-[node name="Weapon" type="Node2D"]
+[node name="Weapon" type="Node2D" unique_id=1235090220]
 script = ExtResource("1_w")
 bullet = ExtResource("2_b")
 
-[node name="ReloadTimer" type="Timer" parent="."]
+[node name="ReloadTimer" type="Timer" parent="." unique_id=708916346]
 wait_time = 0.2
 one_shot = true
 

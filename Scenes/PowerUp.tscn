@@ -1,21 +1,22 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://kjfnmvakonlc"]
 
-[ext_resource type="Script" path="res://Scenes/powerup.gd" id="1_s"]
-[ext_resource type="Texture2D" path="res://Assets/Galaga/power_vida.png" id="2_t"]
+[ext_resource type="Script" uid="uid://2ktser8d5ygt" path="res://Scenes/powerup.gd" id="1_s"]
+[ext_resource type="Texture2D" uid="uid://csv3ku4tqo8ru" path="res://Assets/Galaga/power_vida.png" id="2_t"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_p"]
 radius = 18.0
 
-[node name="PowerUp" type="Area2D"]
+[node name="PowerUp" type="Area2D" unique_id=1313778876]
 collision_layer = 0
 monitorable = false
 script = ExtResource("1_s")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=725888696]
 scale = Vector2(2.5, 2.5)
 texture = ExtResource("2_t")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=601694677]
+position = Vector2(-1.5, 0)
 shape = SubResource("CircleShape2D_p")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

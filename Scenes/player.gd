@@ -48,12 +48,12 @@ func _physics_process(delta):
 	var dir = Input.get_axis("left", "right")
 	velocity = Vector2(dir * speed, 0)
 	move_and_slide()
-	global_position.x = clamp(global_position.x, 30, 570)
+	global_position = Vector2(clamp(global_position.x, 30, 570), POS_INICIAL.y)
 
 
 # cualquier golpe: con nave doble pierdes una nave, si no pierdes una vida
 func take_damage(_damage):
-	if escudo or invencible or dead:
+	if escudo or invencible or dead or capturado:
 		return
 	if doble:
 		perder_doble()
@@ -96,22 +96,28 @@ func fin_invencible():
 
 
 # jefe llama esta funcion para el rayo que captura nave
-func capture():
+# el jefe jala la nave: gira, se encoge y sube hacia él
+func capture(jefe):
 	if capturado or escudo or invencible or doble or dead:
 		return false
-	capturado = true
-	Global.play_sfx("fighter_captured")
-	var t = create_tween()
-	t.tween_property($Nave, "rotation", TAU * 3, 2.0)
-	t.finished.connect(soltar)
+		capturado = true
+		Global.play_sfx("fighter_captured")
+	var t = create_tween().set_parallel(true)
+	t.tween_property($Nave, "rotation", TAU * 4, 2.0)
+	t.tween_property($Nave, "scale", Vector2(1.2, 1.2), 2.0)
+	t.tween_property(self, "global_position", jefe.global_position + Vector2(0, 70), 2.0)
+	t.chain().tween_callback(soltar.bind(jefe))
 	return true
-
-
-# la nave capturada se pierde: cuesta una vida
-func soltar():
+ 
+ 
+# la nave llegó al jefe: se la lleva y cuesta una vida
+func soltar(jefe):
 	$Nave.rotation = 0
+	$Nave.scale = Vector2(2.5, 2.5)
 	capturado = false
-	die()
+	if is_instance_valid(jefe):
+		jefe.nave_capturada()
+		die()
 
 
 # si muere jefe se activa doble nave

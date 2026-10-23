@@ -13,6 +13,8 @@ signal ship_rescued
 #probabilidad de soltar un premio.
 @export var probabilidad_powerup: float = 0.12
 
+var rayo_hh = 0.0
+var rayo_cerca = 0.0
 var current_hp: float
 var points = 50
 var tipo = "abeja"
@@ -41,16 +43,21 @@ var y_giro = randf_range(500, 640)   # altura donde la abeja da la vuelta
 
 #se crea el enemigo aleatorio
 func _ready():
-	if tipo == "mariposa":
+	if tipo == "abeja":
+		points = 50
+		max_hp = 1
+		print(ProjectSettings.globalize_path("res://"))
+
+	elif tipo == "mariposa":
 		points = 80
+		max_hp = 1
 	elif tipo == "jefe":
 		points = 150
-		max_hp *= 2
+		max_hp = 2
 	sprite.play(tipo)
 	current_hp = max_hp
 	health_changed.emit(current_hp, max_hp)
-
-	speed += 20 * (nivel - 1)
+	speed = min(speed + 20 * (nivel - 1), 220.0)
 	$Weapon.reload_time = max(1.2, 2.5 - 0.15 * (nivel - 1))
 	if tipo == "jefe":
 		$Weapon.queue_free()   # el jefe no dispara, solo captura
@@ -155,31 +162,37 @@ func _exit_tree():
 	if slot != -1 and is_instance_valid(map):
 		map.liberar(slot)
 
-#jefe captor
+# jefe captor
 func actualizar_captor(delta):
-	#el jefe bajaria hasta abajo de la pantalla
-	if estado == "bajando" and global_position.y >= 460:
-		estado = "rayo"
-		#muestra el rayo
-		$Rayo.show()
-		$Rayo/Sprite.play()
-		#manda un sonido
-		sonido_rayo = Global.play_sfx("tractor_beam")
+	# El jefe baja hasta abajo de la pantalla
+	if estado == "bajando":
+		if global_position.y >= 460:
+			estado = "rayo"
+			$Rayo.show()
+			$Rayo/Sprite.play()
+			expandir_rayo()
+			sonido_rayo = Global.play_sfx("tractor_beam")
+			return Vector2.ZERO
+		return Vector2.DOWN # <--- Obliga a que baje mientras no llegue a la altura 460
+
 	if estado == "rayo":
 		tiempo_rayo += delta
-		for body in $Rayo/Area.get_overlapping_bodies():
-			#secuestra la nave y regresa
-			intentar_captura(body)
-		if tiempo_rayo > 4 and estado == "rayo":
+		if tiempo_rayo > 1.2:         # solo captura cuando el rayo ya se expandió
+			for body in $Rayo/Area.get_overlapping_bodies():
+				intentar_captura(body)
+		if tiempo_rayo > 5:
 			terminar_rayo()
 		return Vector2.ZERO
+
+	if estado == "capturando":
+		return Vector2.ZERO            # quieto mientras jala la nave
+ 
 	if estado == "regresando":
 		if global_position.y <= 150:
 			estado = "patrulla"
 			tiempo_rayo = 0
 		return Vector2.UP
-		#si no atrapa nada se va y apaga el rayo
-		# rebota en los bordes esperando que jugador la rescate
+
 	if estado == "patrulla":
 		tiempo_rayo += delta
 		if global_position.x < 60:
@@ -189,6 +202,7 @@ func actualizar_captor(delta):
 		if tiempo_rayo > 10:
 			estado = "saliendo"
 		return Vector2(lado, 0)
+
 	return Vector2.DOWN
 
 
@@ -200,11 +214,30 @@ func terminar_rayo():
 
 
 func intentar_captura(body):
-	if estado == "rayo" and body.has_method("capture") and body.capture():
-		con_nave = true
-		$NaveCapturada.show()
-		terminar_rayo()
-		estado = "regresando"
+	if estado == "rayo" and body.has_method("capture") and body.capture(self):
+		estado = "capturando"
+ 
+ 
+# el jugador llama esto cuando su nave ya llegó al jefe
+func nave_capturada():
+	con_nave = true
+	$NaveCapturada.show()
+	terminar_rayo()
+	estado = "regresando"
+ 
+ 
+# el rayo crece desde el jefe hacia abajo
+func expandir_rayo():
+	var tex = $Rayo/Sprite.sprite_frames.get_frame_texture($Rayo/Sprite.animation, 0)
+	rayo_hh = tex.get_height() * $Rayo/Sprite.scale.y / 2.0
+	rayo_cerca = 140.0 - rayo_hh
+	set_rayo(0.0)
+	create_tween().tween_method(set_rayo, 0.0, 1.0, 1.2)
+ 
+ 
+func set_rayo(s):
+	$Rayo.scale = Vector2(1, max(s, 0.01))
+	$Rayo.position.y = -(rayo_cerca + rayo_hh * s)
 
 #para el daño 
 func take_damage(damage):
